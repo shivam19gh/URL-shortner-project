@@ -1,34 +1,35 @@
 const express = require('express')
-const mongoose = require('mongoose')
+const mongoose = require('mongoose') //mongoose library
 const ShortUrl = require('./models/shortUrl')
 const app = express()
 
-mongoose.connect('mongodb://localhost/urlShortener', {
+//connecting the server to mongoose 
+mongoose.connect('mongodb://127.0.0.1:27017/urlShortener', {
   useNewUrlParser: true, useUnifiedTopology: true
 })
 
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
 
-app.get('/', async (req, res) => {
+app.get('/', async (requir, respons) => {
   const shortUrls = await ShortUrl.find()
-  res.render('index',{shortUrls:shortUrls})
- })
-
-app.post('/shortUrls', async (req, res) => {
-  await ShortUrl.create({ full: req.body.fullUrl })
-
-  res.redirect('/')
+  respons.render('index', { shortUrls: shortUrls })
 })
 
-app.get('/:shortUrl', async (req, res) => {
-  const shortUrl = await ShortUrl.findOne({ short: req.params.shortUrl })
-  if (shortUrl == null) return res.sendStatus(404)
+app.post('/shortUrls', async (requir, respons) => {
+  await ShortUrl.create({ full: requir.body.fullUrl })
 
-  shortUrl.clicks++
+  respons.redirect('/')
+})
+
+app.get('/:shortUrl', async (requir, respons) => {
+  const shortUrl = await ShortUrl.findOne({ short: requir.params.shortUrl })
+  if (shortUrl == null) return respons.sendStatus(404)
+
+  shortUrl.clicks++ //increment of no. of clicks whenever the shrink button is tapped
   shortUrl.save()
 
-  res.redirect(shortUrl.full)
+  respons.redirect(shortUrl.full) //redirect to fullUrl when tapped on the shortUrl 
 })
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 4000); //visit the site -> localhost:4000 to use it
